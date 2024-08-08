@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cobo.Application.Dtos;
+using System;
 using System.Collections.Generic;
 
 namespace Cobo.Domain.Models;
@@ -12,4 +13,5 @@ public partial class User
     public string Dni { get; set; } = null!;
 
     public Guid Id { get; set; }
+    public ICollection<AccountDto?> Account {  get; set; }
 }

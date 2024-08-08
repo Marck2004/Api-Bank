@@ -1,11 +1,14 @@
-﻿using Cobo.Domain.Models;
+﻿using Cobo.Application.Dtos;
+using Cobo.Domain.Models;
 using Domain.Interfaces;
 using FluentResults;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Cobo.Domain.UsersRepository;
 public class UserRepository : IUserInterface
@@ -20,15 +23,33 @@ public class UserRepository : IUserInterface
         throw new NotImplementedException();
     }
 
-    public User getUser(Guid id)
+    public IQueryable<UserDto> getUser(Guid id)
     {
-        User user = (User)_context.Users.Select(user => user.Id == id);
+        IQueryable<UserDto> user = (
+            from Users in _context.Users
+            where Users.Id == id
+            select new UserDto
+            {
+                //Account = Users.Account,
+                Dni = Users.Dni,
+                Name = Users.Nombre,
+                Password = Users.Passwd
+            });
         return user;
     }
 
-    public List<User> getUsers()
+    public List<UserDto> getUsers()
     {
-        return _context.Users.ToList();
+        IQueryable<UserDto> users = (
+            from Users in _context.Users
+            select new UserDto
+                {
+                Name = Users.Nombre,
+                Password = Users.Passwd,
+                Dni = Users.Dni,
+                Account = Users.Account
+                });
+        return users.ToList();
     }
 
     public Result updateUser(Guid id, User user)

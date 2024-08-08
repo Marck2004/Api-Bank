@@ -22,7 +22,7 @@ public partial class BancoContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+    
         => optionsBuilder.UseSqlServer("Server=localhost;Database=Banco;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,7 +33,7 @@ public partial class BancoContext : DbContext
                 .HasNoKey()
                 .ToTable("Account");
 
-            entity.Property(e => e.Balance).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.Balance).HasPrecision(18, 0);
             entity.Property(e => e.NumCuenta)
                 .HasMaxLength(150)
                 .IsUnicode(false);

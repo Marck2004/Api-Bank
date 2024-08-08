@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Cobo.Application.Dtos;
     public class AccountDto
     {
-        public int id {  get; set; }
-        public string numCuenta {  get; set; }
-        public decimal balance { get; set; }
+        public int Id {  get; set; }
+        public string NumCuenta {  get; set; }
+        public decimal Balance { get; set; }
         public Guid IdUsuario { get; set; }
     }
