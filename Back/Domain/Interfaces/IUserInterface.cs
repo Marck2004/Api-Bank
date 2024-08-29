@@ -1,19 +1,14 @@
-﻿using Cobo.Application.Dtos;
-using Cobo.Domain.Models;
+﻿using Cobo.Application.Dtos.Users;
 using FluentResults;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
-namespace Domain.Interfaces;
-    public interface IUserInterface
-    {
-    public  List<UserDto> getUsers();
-    public IQueryable<UserDto> getUser(Guid id);
-    public Result updateUser(Guid id, User user);
-    public Result deleteUser(Guid id);
-    }
+namespace Cobo.Domain.Interfaces;
+public interface IUserInterface
+{
+    public Task<IEnumerable<QueriesUserDto>> GetUsers();
+    public Task<QueriesUserDto> GetUser(string email, string password);
+    public Result UpdateUser(Guid id, CommandsUserDto user);
+    public Result DeleteUser(Guid id);
+    public Result AddUser(CommandsUserDto user);
+}
 

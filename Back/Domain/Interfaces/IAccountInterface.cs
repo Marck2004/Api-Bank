@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cobo.Application.Dtos.Account;
 
-namespace Domain.Interfaces;
-    internal interface IAccountInterface
-    {
-    }
+namespace Cobo.Domain.Interfaces;
+public interface IAccountInterface
+{
+    Task<IEnumerable<AccountQueriesDto>> GetAccountsByUserId(Guid UserId);
+}

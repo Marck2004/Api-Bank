@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cobo.Infraestructure.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Cobo.Domain.Models;

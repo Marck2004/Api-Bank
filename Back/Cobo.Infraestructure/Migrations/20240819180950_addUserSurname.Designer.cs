@@ -4,6 +4,7 @@ using Cobo.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,44 +12,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cobo.Domain.Migrations
 {
     [DbContext(typeof(BancoContext))]
-    partial class BancoContextModelSnapshot : ModelSnapshot
+    [Migration("20240819180950_addUserSurname")]
+    partial class addUserSurname
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0-preview.6.24327.4")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Cobo.Application.Dtos.AccountDto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("IdUsuario")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("NumCuenta")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AccountDto");
-                });
 
             modelBuilder.Entity("Cobo.Domain.Models.Account", b =>
                 {
@@ -99,7 +74,7 @@ namespace Cobo.Domain.Migrations
                     b.ToTable("Transacction", (string)null);
                 });
 
-            modelBuilder.Entity("Cobo.Domain.Models.User", b =>
+            modelBuilder.Entity("Cobo.Infraestructure.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -109,6 +84,10 @@ namespace Cobo.Domain.Migrations
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -128,27 +107,15 @@ namespace Cobo.Domain.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Cobo.Application.Dtos.AccountDto", b =>
-                {
-                    b.HasOne("Cobo.Domain.Models.User", null)
-                        .WithMany("Account")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("Cobo.Domain.Models.Account", b =>
                 {
-                    b.HasOne("Cobo.Domain.Models.User", "IdUsuarioNavigation")
+                    b.HasOne("Cobo.Infraestructure.Models.User", "IdUsuarioNavigation")
                         .WithMany()
                         .HasForeignKey("IdUsuario")
                         .IsRequired()
                         .HasConstraintName("FK_Cuenta_Usuarios");
 
                     b.Navigation("IdUsuarioNavigation");
-                });
-
-            modelBuilder.Entity("Cobo.Domain.Models.User", b =>
-                {
-                    b.Navigation("Account");
                 });
 #pragma warning restore 612, 618
         }

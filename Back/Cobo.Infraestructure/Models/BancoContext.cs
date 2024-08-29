@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cobo.Infraestructure.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cobo.Domain.Models;
