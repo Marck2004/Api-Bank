@@ -6,9 +6,9 @@ public partial class Account
 
     public string NumCuenta { get; set; } = null!;
 
-    public decimal Balance { get; set; }
+    public double Balance { get; set; }
 
-    public Guid IdUsuario { get; set; }
+    public Guid UserId { get; set; }
 
     public DateTimeOffset FechaCreacion { get; set; }
 

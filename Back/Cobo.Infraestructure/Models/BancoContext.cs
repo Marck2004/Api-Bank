@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Cobo.Infraestructure.Models;
+﻿using Cobo.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cobo.Domain.Models;
+namespace Cobo.Infraestructure.Models;
 
 public partial class BancoContext : DbContext
 {
@@ -23,7 +21,7 @@ public partial class BancoContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    
+
         => optionsBuilder.UseSqlServer("Server=localhost;Database=Banco;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,8 +29,9 @@ public partial class BancoContext : DbContext
         modelBuilder.Entity<Account>(entity =>
         {
             entity
-                .HasNoKey()
-                .ToTable("Account");
+                .HasKey(a => a.Id);
+
+            entity.ToTable("Account");
 
             entity.Property(e => e.Balance).HasPrecision(18, 0);
             entity.Property(e => e.NumCuenta)
@@ -40,7 +39,7 @@ public partial class BancoContext : DbContext
                 .IsUnicode(false);
 
             entity.HasOne(d => d.IdUsuarioNavigation).WithMany()
-                .HasForeignKey(d => d.IdUsuario)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Cuenta_Usuarios");
         });

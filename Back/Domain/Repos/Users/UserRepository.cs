@@ -1,7 +1,6 @@
 ﻿using Cobo.Application.Dtos.Account;
 using Cobo.Application.Dtos.Users;
 using Cobo.Domain.Interfaces;
-using Cobo.Domain.Models;
 using Cobo.Infraestructure.Models;
 using Dapper;
 using FluentResults;
