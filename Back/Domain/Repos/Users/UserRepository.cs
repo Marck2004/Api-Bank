@@ -6,11 +6,12 @@ using Cobo.Infraestructure.Models;
 using Dapper;
 using FluentResults;
 using Serilog.Core;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 
 namespace Cobo.Domain.Repos.Users;
-public class UserRepository : IUserInterface
+public partial class UserRepository : IUserInterface
 {
     private readonly BancoContext _context;
     private readonly Logger _logger;
@@ -44,7 +45,7 @@ public class UserRepository : IUserInterface
         }
     }
 
-    public async Task<QueriesUserDto> GetUser(string email, string password)
+    public async Task<QueriesUserDto?> GetUser(string email, string password)
     {
         SqlConnection connection = new(_connection);
 
@@ -121,17 +122,12 @@ public class UserRepository : IUserInterface
 		on users.Id = accounts.UserId 
         ";
 
-
             return await connection.QueryAsync<QueriesUserDto, AccountQueriesDto, QueriesUserDto>(
                 sql,
                 (user, account) =>
                 {
-                    user.Account = new List<AccountQueriesDto>();
-
-                    if (account != null)
-                    {
+                    if (account != default)
                         user.Account.Add(account);
-                    }
 
                     return user;
                 },
@@ -148,6 +144,7 @@ public class UserRepository : IUserInterface
     {
         try
         {
+            ValidateForm(user);
 
             User? findUser = _context.Users.Find(id);
 
@@ -171,25 +168,32 @@ public class UserRepository : IUserInterface
         }
     }
 
+    private async Task<bool> FindUser(string email)
+    {
+        SqlConnection connection = new(_connection);
+        try
+        {
+            await connection.OpenAsync();
+
+            const string sql = $"""
+            SELECT COUNT(*)
+            FROM dbo.Users u
+            where u.{nameof(User.Email)} = @email
+            """;
+
+            return await connection.QueryFirstAsync(sql, new { sql });
+        }
+        catch (Exception e)
+        {
+            _logger.Error(e.Message);
+            return false;
+        }
+    }
     public Result AddUser(CommandsUserDto newUser)
     {
         try
         {
-            bool findDni = _context.Users.Select(repo => repo.Dni == newUser.Dni)
-                            .FirstOrDefault();
-            if (findDni)
-                return Result.Fail("Un usuario ya existe con el mismo dni");
-
-            bool findEmail = _context.Users.Find(newUser.Email)
-                            .FirstOrDefault();
-            if (findEmail)
-                return Result.Fail("Un usuario ya existe con el mismo correo");
-
-            if (!Regex.IsMatch(newUser.Dni.Trim(), @"^\d{8}[A-Z]$"))
-                return Result.Fail("Formato inválido para el dni");
-
-            if (!Regex.IsMatch(newUser.Email, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
-                return Result.Fail("Formato inválido para el email");
+            ValidateForm(newUser);
 
             User newGuidUser = new()
             {
@@ -212,4 +216,29 @@ public class UserRepository : IUserInterface
             return Result.Fail("Ocurrio un error en el servidor");
         }
     }
+
+    private Result ValidateForm(CommandsUserDto userValidate)
+    {
+        bool findDni = _context.Users.Select(repo => repo.Dni == userValidate.Dni)
+                            .FirstOrDefault();
+        if (findDni)
+            return Result.Fail("Un usuario ya existe con el mismo dni");
+
+        if (!DniRegex().IsMatch(userValidate.Dni.Trim()))
+            return Result.Fail("Formato inválido para el dni");
+
+        if (!EmailRegex().IsMatch(userValidate.Email.Trim()))
+            return Result.Fail("Formato inválido para el email");
+
+        if (FindUser(userValidate.Email).Result)
+            return Result.Fail("Ya existe un usuario con ese email");
+
+        return Result.Ok();
+    }
+
+    [GeneratedRegex(@"^\d{8}[A-Z]$")]
+    private static partial Regex DniRegex();
+
+    [GeneratedRegex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
+    private static partial Regex EmailRegex();
 }

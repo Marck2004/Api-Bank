@@ -9,6 +9,6 @@ public class QueriesUserDto
     public string Dni { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string email { get; set; } = string.Empty;
-    public List<AccountQueriesDto>? Account { get; set; } = new List<AccountQueriesDto>();
+    public List<AccountQueriesDto> Account { get; set; } = new List<AccountQueriesDto>();
 }
 

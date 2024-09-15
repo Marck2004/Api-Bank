@@ -1,8 +1,4 @@
-﻿using Cobo.Infraestructure.Models;
-using System;
-using System.Collections.Generic;
-
-namespace Cobo.Domain.Models;
+﻿namespace Cobo.Infraestructure.Models;
 
 public partial class Account
 {
@@ -13,6 +9,8 @@ public partial class Account
     public decimal Balance { get; set; }
 
     public Guid IdUsuario { get; set; }
+
+    public DateTimeOffset FechaCreacion { get; set; }
 
     public virtual User IdUsuarioNavigation { get; set; } = null!;
 }
