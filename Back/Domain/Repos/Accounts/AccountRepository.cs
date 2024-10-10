@@ -3,6 +3,7 @@ using Cobo.Domain.Interfaces;
 using Cobo.Infraestructure.Models;
 using Dapper;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Serilog.Core;
 using System.Data.SqlClient;
@@ -47,6 +48,10 @@ public class AccountRepository : IAccountInterface
     {
         try
         {
+            bool findUser = _context.Users.Select(c => c.Id == UserId).FirstOrDefault();
+            if (!findUser)
+                return Result.Fail("El usuario no existe en la base de datos");
+
             Account newAccount = new()
             {
                 Id = Guid.NewGuid(),
@@ -68,6 +73,18 @@ public class AccountRepository : IAccountInterface
         }
     }
 
+    public async Task<Result> DeleteAccountById(DeleteAccountCommand deleteAccountCommand)
+    {
+        int deletedAccountResult = await _context.Accounts
+                                    .Where(c => c.Id == deleteAccountCommand.AccountId &&
+                                    c.UserId == deleteAccountCommand.UserId)
+                                    .ExecuteDeleteAsync();
+        if (deletedAccountResult == 0)
+            return Result.Fail("Error al intentar borrar una cuenta bancaria");
+
+        return Result.Ok();
+    }
+
     private string AccountNumberGenerator()
     {
         Random random = new();
@@ -79,6 +96,29 @@ public class AccountRepository : IAccountInterface
         }
 
         return cuenta;
+    }
+
+    public async Task<Account> GetAccountsByAccountNumber(string accountNumber)
+    {
+        SqlConnection connection = new(connectionString);
+        try
+        {
+            connection.Open();
+
+            const string sql = $"""
+                SELECT *
+                FROM dbo.Account AS account
+                WHERE account.{nameof(AccountQueriesDto.NumCuenta)} = @accountNumber
+                """;
+
+            return await connection.QueryFirstAsync<Account>(
+                sql, new { accountNumber });
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex.Message);
+            return new Account();
+        }
     }
 }
 

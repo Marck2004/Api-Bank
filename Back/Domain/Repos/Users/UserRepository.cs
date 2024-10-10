@@ -4,6 +4,7 @@ using Cobo.Domain.Interfaces;
 using Cobo.Infraestructure.Models;
 using Dapper;
 using FluentResults;
+using Microsoft.Extensions.Configuration;
 using Serilog.Core;
 using System.Data;
 using System.Data.SqlClient;
@@ -15,9 +16,11 @@ public partial class UserRepository : IUserInterface
     private readonly BancoContext _context;
     private readonly Logger _logger;
 
-    private readonly string _connection = "Server=localhost;Database=Banco;Trusted_Connection=True;TrustServerCertificate=True";
-    public UserRepository(BancoContext context)
+    private readonly string _connection;
+    public UserRepository(BancoContext context, IConfiguration configuration)
     {
+        _connection = configuration.GetConnectionString("DefaultConnection")!;
+
         _context = context;
     }
     public Result DeleteUser(Guid id)

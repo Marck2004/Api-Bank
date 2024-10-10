@@ -1,5 +1,4 @@
-﻿using Cobo.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Cobo.Infraestructure.Models;
 
@@ -16,7 +15,7 @@ public partial class BancoContext : DbContext
 
     public virtual DbSet<Account> Accounts { get; set; }
 
-    public virtual DbSet<Transacction> Transacctions { get; set; }
+    public virtual DbSet<Transactions> Transactions { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -44,11 +43,11 @@ public partial class BancoContext : DbContext
                 .HasConstraintName("FK_Cuenta_Usuarios");
         });
 
-        modelBuilder.Entity<Transacction>(entity =>
+        modelBuilder.Entity<Transactions>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Transacciones");
 
-            entity.ToTable("Transacction");
+            entity.ToTable("Transactions");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Cant).HasColumnType("decimal(18, 0)");

@@ -1,53 +1,18 @@
-	- Se ha creado un servicio con su interfaz ITokenService en el que se recupera un token JWT de esta manera:
-	JwtSecurityTokenHandler tokenHandler = new();
-	byte[] key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
-	SecurityTokenDescriptor tokenDescriptor = new()
-		{
-		    Subject = new ClaimsIdentity(new Claim[]
-		    {
-		        new(ClaimTypes.Name, user.Name),
-		        new(ClaimTypes.Email, user.email)
-	    }),
-	    Expires = DateTime.UtcNow.AddHours(1),
-	    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),           SecurityAlgorithms.HmacSha256Signature),
-	    Issuer = _configuration["Jwt:Issuer"],
-	    Audience = _configuration["Jwt:Audience"]
-	};
-	SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-	return tokenHandler.WriteToken(token);
+En este apartado se va a explicar como se ha generado el Token JWT para la aplicacion del banco.
 
-	- Esto se hace para describir el tipo de token que queremos devolver que también lo especificamos a través del appsettings ->
-  "Jwt": {
-	  "Issuer": "WebApiJwt.com",
-	  "Audience": "localhost",
-	  "Key": "S3cr3t_K3y!.123_S3cr3t_K3y!.123@#A7((!?67310¡"
-   }
+En primer lugar cuando accedamos al program.cs, vamos a añadir la autenticacion con sus parametros.
+![[Pasted image 20240915122139.png]]
+En el siguiente paso añadiremos la autorizacion, junto con el archivo que hemos creado para añadir al swagger la autorizacion.
+![[Pasted image 20240915122245.png]]
+Y por último lugar para este archivo, vamos a utilizar la autenticacion, la autorizacion y el mapeo de controllers, siempre va a ser en este orden:
 
-	- Por último, especificaremos el tipo de token que vamos a recuperar en el           program.cs
-	builder.Services.AddSwaggerGen(c =>
-{
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Description = "Please enter token",
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        BearerFormat = "JWT",
-        Scheme = "Bearer"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-});
+1 - app.UseAuthentication
+2 - app.UseAuthorization
+3 - app.MapControllers
 
+En el siguiente paso, vamos a ver como se crea el JWT en el servicio que en mi caso lo voy a llamar en el primer login solamente.
+![[Pasted image 20240915122445.png]]
+como podemos observar, se crean las claims que queremos que viajen en el token y se añade un json descriptor para adjuntar todas las caracteristicas de este, y al final de crear el token se devuelve en el servicio.
 
+En el último paso vamos a ver como se ha modificado el swagger para que nos aparezca la autorizacion en este.
+![[Pasted image 20240915122612.png]]

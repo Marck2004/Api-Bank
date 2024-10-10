@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Cobo.Infraestructure.Models;
 
-namespace Cobo.Domain.Models;
-
-public partial class Transacction
+public partial class Transactions
 {
     public Guid Id { get; set; }
 
@@ -11,5 +8,5 @@ public partial class Transacction
 
     public string NumCuentaDst { get; set; } = null!;
 
-    public decimal Cant { get; set; }
+    public double Cant { get; set; }
 }
