@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "WUxFxqqGRfGln1Zy5DqYIVylqyRBQz/Ew/huBkvkNKQ=",
+  "Source": "Cobo.Api",
+  "BasePath": "_content/Cobo.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
